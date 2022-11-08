@@ -1,4 +1,5 @@
 
+let apigClient = apigClientFactory.newClient()
 let custom_labels = []
 
 function displayLabels() {
@@ -28,4 +29,36 @@ $(document).ready(function() {
         console.log(custom_labels)
         displayLabels()
     })
+
+    $("#upload-image").change(function(e) {
+        const file = this.files[0]
+        $("#upload-file-label").html(file.name)
+    })
+
+    $("#upload-button").click(function() {
+        console.log("uploading")
+        const file = $("#upload-image")[0].files[0]
+        let fr = new FileReader()
+        fr.onload = function(e) {
+            const data = e.target.result
+            const params = {
+                "object" : file.name,
+                "customlabels" : custom_labels
+            }
+            const body = data
+
+            apigClient.uploadObjectPut(params, data).then(function(result) {
+                console.log("success")
+                console.log(result)
+            }).catch (function(result) {
+                console.log("failure")
+                console.log(result)
+            })
+        }
+        fr.readAsBinaryString(file)
+    })
+
+    const file = $("#upload-image")[0].files[0]
+    $("#upload-file-label").html(file.name)
+
 })
