@@ -150,6 +150,7 @@ Resources:
                 Action:
                   - s3:ListAllMyBuckets
                   - s3:ListObjects
+                  - lambda:*
 
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
