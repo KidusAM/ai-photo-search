@@ -252,6 +252,39 @@ Resources:
                 - Name: AppBuildAndPushOutput
               RunOrder: 1
 
+  DeployFrontendProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts TODO
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref AssetsBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Src
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitHubUser
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: Src
+              RunOrder: 1
+      - Name: Deploy
+        Actions:
+          
+
 Outputs:
   WebsiteURL:
     Value: !GetAtt FrontendBucket.WebsiteURL

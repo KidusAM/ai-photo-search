@@ -7,8 +7,10 @@ phases:
   build:
     commands:
       - echo "Zipping and deploying lambda files"
-      - zip index_photos.zip index-photos.py
-      - zip search_images.zip search-images.py
+      - cp index-photos.py lambda_function.py
+      - zip index_photos.zip lambda_function.py
+      - cp search-images.py lambda_function.py
+      - zip search_images.zip lambda_function.py
   post_build:
     commands:
       - echo "Pushing lambdas"
