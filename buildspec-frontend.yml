@@ -2,7 +2,5 @@ version: 0.2
 phases:
   build:
     commands:
-      - mkdir frontend
-      - cp *.html *.js frontend/
       - cd frontend
       - aws s3 cp . s3://`printenv S3_CLIENT_BUCKET` --recursive
