@@ -26,7 +26,7 @@ def lambda_handler(event, context):
     try:
         if 'customlabels' in s3_metadata['Metadata']:
             print('the metadata is: ', s3_metadata['Metadata']['customlabels'])
-            photo_labels = json.loads(s3_metadata['Metadata']['customlabels'])['customlabels']
+            photo_labels = s3_metadata['Metadata']['customlabels'].split(',')
     except Exception as e:
         print("error parsing custom labels: ", e)
 

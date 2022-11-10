@@ -59,6 +59,9 @@ $(document).ready(function() {
                 url: url,
                 processData:false,
                 contentType: "image/jpeg",
+                headers: {
+                    'customlabels' : custom_labels
+                },
                 data: body,
                 type: 'PUT',
                 success : function(result) {
