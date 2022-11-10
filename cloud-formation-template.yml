@@ -30,8 +30,23 @@ Resources:
   AssetsBucket:
     Type: AWS::S3::Bucket
 
+  PhotosBucketPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn: IndexLambda
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref IndexLambda
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref "AWS::AccountId"
+
   PhotosBucket:
     Type: AWS::S3::Bucket
+    DependsOn: PhotosBucketPermission
+    Properties:
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:*'
+            Function: !GetAtt IndexLambda.Arn
 
   FrontendBucket:
     Type: AWS::S3::Bucket

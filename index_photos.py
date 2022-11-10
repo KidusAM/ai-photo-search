@@ -5,7 +5,7 @@ from requests_aws4auth.requests_aws4auth import AWS4Auth
 import requests
 import os
 
-os_domain = os.environ['OpenSearchLink'] if 'OpenSearchLink' in os.environ else  'https://search-hw2-photos-kvfy2pafc5gbxpsezm4h6ft47e.us-east-1.es.amazonaws.com'
+os_domain = 'https://' + os.environ['OpenSearchLink'] if 'OpenSearchLink' in os.environ else  'https://search-hw2-photos-kvfy2pafc5gbxpsezm4h6ft47e.us-east-1.es.amazonaws.com'
 
 def lambda_handler(event, context):
     s3_data = event['Records'][0]['s3']
