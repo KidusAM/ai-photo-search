@@ -101,21 +101,57 @@ apigClientFactory.newClient = function (config) {
     };
     
     
-    apigClient.uploadObjectPut = function (params, body, additionalParams) {
+    apigClient.searchOptions = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['object', 'customlabels'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
         
-        var uploadObjectPutRequest = {
+        var searchOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/search').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(searchOptionsRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.uploadItemPut = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['item', 'customlabels'], ['body']);
+        
+        var uploadItemPutRequest = {
             verb: 'put'.toUpperCase(),
-            path: pathComponent + uritemplate('/upload/{object}').expand(apiGateway.core.utils.parseParametersToObject(params, ['object', ])),
+            path: pathComponent + uritemplate('/upload/{item}').expand(apiGateway.core.utils.parseParametersToObject(params, ['item', ])),
             headers: apiGateway.core.utils.parseParametersToObject(params, ['customlabels']),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(uploadObjectPutRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(uploadItemPutRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.uploadItemOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        
+        var uploadItemOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/upload/{item}').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(uploadItemOptionsRequest, authType, additionalParams, config.apiKey);
     };
     
 

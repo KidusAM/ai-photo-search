@@ -40,22 +40,33 @@ $(document).ready(function() {
         const file = $("#upload-image")[0].files[0]
         let fr = new FileReader()
         fr.onload = function(e) {
-            const data = e.target.result
+            const data = this.result
             const params = {
-                "object" : file.name,
+                "item" : file.name,
                 "customlabels" : custom_labels
             }
-            const body = data
+            const additionalParams = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
 
-            apigClient.uploadObjectPut(params, data).then(function(result) {
+            let decoder = new TextDecoder("utf-8");
+            const arr = new Uint8Array(data)
+            const blob = new Blob([arr], {type: "image/jpeg"})
+            const body = blob
+            console.log("len: " + body.length)
+            apigClient.uploadItemPut(params, body, additionalParams).then(function(result) {
                 console.log("success")
+                $("#result-container").html("Success: " + file.name)
                 console.log(result)
             }).catch (function(result) {
+                $("#result-container").html("Failure: " + result)
                 console.log("failure")
                 console.log(result)
             })
         }
-        fr.readAsBinaryString(file)
+        fr.readAsArrayBuffer(file, 'ascii')
     })
 
     const file = $("#upload-image")[0].files[0]

@@ -212,6 +212,29 @@ Resources:
       Name: !Sub ${AWS::StackName}-build-app
       ServiceRole: !Ref CodeBuildServiceRole
 
+  DeployFrontend:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: "CODEPIPELINE"
+      Source:
+        Type: "CODEPIPELINE"
+        BuildSpec: |
+          version: 0.2
+          phases:
+            build:
+              commands:
+                - aws s3 cp *.html *.js s3://$S3_CLIENT_BUCKET --recursive
+      Environment:
+        ComputeType: "BUILD_GENERAL1_SMALL"
+        Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
+        Type: "LINUX_CONTAINER"
+        EnvironmentVariables:
+          - Name: S3_CLIENT_BUCKET
+            Value: !Ref FrontendBucket
+      Name: !Sub ${AWS::StackName}-deply-frontend
+      ServiceRole: !Ref CodeBuildServiceRole
+
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -252,11 +275,45 @@ Resources:
                 - Name: AppBuildAndPushOutput
               RunOrder: 1
 
-  # DeployFrontendProject:
-  #   Type: AWS::CodeBuild::Project
-  #   Properties:
-  #     Artifacts
-
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref AssetsBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Src
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitHubUser
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: Src
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: DeployFrontend
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeployFrontend
+              InputArtifacts:
+                - Name: Src
+              OutputArtifacts:
+                - Name: FrontendDeployArtifacts
+              RunOrder: 1
 Outputs:
   WebsiteURL:
     Value: !GetAtt FrontendBucket.WebsiteURL
