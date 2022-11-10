@@ -1,6 +1,7 @@
 
 let apigClient = apigClientFactory.newClient()
 let custom_labels = []
+let upload_endpoint = 'https://zp5i5nwx53.execute-api.us-east-1.amazonaws.com/dev/upload/'
 
 function displayLabels() {
     let labels_container = $("#custom-labels")
@@ -51,20 +52,37 @@ $(document).ready(function() {
                 }
             }
 
-            let decoder = new TextDecoder("utf-8");
-            const arr = new Uint8Array(data)
-            const blob = new Blob([arr], {type: "image/jpeg"})
-            const body = blob
+            body = data
             console.log("len: " + body.length)
-            apigClient.uploadItemPut(params, body, additionalParams).then(function(result) {
-                console.log("success")
-                $("#result-container").html("Success: " + file.name)
-                console.log(result)
-            }).catch (function(result) {
-                $("#result-container").html("Failure: " + result)
-                console.log("failure")
-                console.log(result)
+            const url = upload_endpoint + file.name
+            $.ajax({
+                url: url,
+                processData:false,
+                contentType: "image/jpeg",
+                data: body,
+                type: 'PUT',
+                success : function(result) {
+                    console.log("success")
+                    $("#result-container").html("Success: " + file.name)
+                    console.log(result)
+
+
+                },
+                failure : function(result) {
+                    console.log("failure")
+                    $("#result-container").html("Failure")
+                    console.log(result)
+                }
             })
+            // apigClient.uploadItemPut(params, body, additionalParams).then(function(result) {
+            //     console.log("success")
+            //     $("#result-container").html("Success: " + file.name)
+            //     console.log(result)
+            // }).catch (function(result) {
+            //     $("#result-container").html("Failure: " + result)
+            //     console.log("failure")
+            //     console.log(result)
+            // })
         }
         fr.readAsArrayBuffer(file, 'ascii')
     })

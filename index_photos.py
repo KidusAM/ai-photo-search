@@ -3,7 +3,9 @@ import boto3
 import time
 from requests_aws4auth.requests_aws4auth import AWS4Auth
 import requests
+import os
 
+os_domain = os.environ['OpenSearchLink'] if 'OpenSearchLink' in os.environ else  'https://search-hw2-photos-kvfy2pafc5gbxpsezm4h6ft47e.us-east-1.es.amazonaws.com'
 
 def lambda_handler(event, context):
     s3_data = event['Records'][0]['s3']
@@ -48,7 +50,7 @@ def lambda_handler(event, context):
     credentials = boto3.Session().get_credentials()
     awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
 
-    host = 'https://search-hw2-photos-kvfy2pafc5gbxpsezm4h6ft47e.us-east-1.es.amazonaws.com'
+    host = os_domain
     index = 'photos'
     index_type = '_doc'
     url = host + '/' + index + '/' + index_type

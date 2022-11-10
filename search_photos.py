@@ -3,10 +3,11 @@ import boto3
 import requests_aws4auth.requests as requests
 from requests_aws4auth.requests_aws4auth import AWS4Auth
 import random
+import os
+
+os_domain = os.environ['OpenSearchLink'] if 'OpenSearchLink' in os.environ else  'https://search-hw2-photos-kvfy2pafc5gbxpsezm4h6ft47e.us-east-1.es.amazonaws.com'
 
 def get_matching_images(query):
-    os_domain = 'https://search-hw2-photos-kvfy2pafc5gbxpsezm4h6ft47e.us-east-1.es.amazonaws.com'
-
     region = 'us-east-1'
     service = 'es'
     credentials = boto3.Session().get_credentials()
