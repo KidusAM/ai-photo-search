@@ -219,12 +219,7 @@ Resources:
         Type: "CODEPIPELINE"
       Source:
         Type: "CODEPIPELINE"
-        BuildSpec: |
-          version: 0.2
-          phases:
-            build:
-              commands:
-                - aws s3 cp *.html *.js s3://$S3_CLIENT_BUCKET --recursive
+        BuildSpec: buildspec-frontend.yml 
       Environment:
         ComputeType: "BUILD_GENERAL1_SMALL"
         Image: "aws/codebuild/amazonlinux2-x86_64-standard:3.0"
@@ -274,31 +269,6 @@ Resources:
               OutputArtifacts:
                 - Name: AppBuildAndPushOutput
               RunOrder: 1
-
-  Pipeline:
-    Type: AWS::CodePipeline::Pipeline
-    Properties:
-      RoleArn: !GetAtt CodePipelineServiceRole.Arn
-      ArtifactStore:
-        Type: S3
-        Location: !Ref AssetsBucket
-      Stages:
-        - Name: Source
-          Actions:
-            - Name: Src
-              ActionTypeId:
-                Category: Source
-                Owner: ThirdParty
-                Version: 1
-                Provider: GitHub
-              Configuration:
-                Owner: !Ref GitHubUser
-                Repo: !Ref GitHubRepo
-                Branch: !Ref GitHubBranch
-                OAuthToken: !Ref GitHubToken
-              OutputArtifacts:
-                - Name: Src
-              RunOrder: 1
         - Name: Deploy
           Actions:
             - Name: DeployFrontend
@@ -314,6 +284,7 @@ Resources:
               OutputArtifacts:
                 - Name: FrontendDeployArtifacts
               RunOrder: 1
+
 Outputs:
   WebsiteURL:
     Value: !GetAtt FrontendBucket.WebsiteURL
