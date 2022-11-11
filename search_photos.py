@@ -81,10 +81,11 @@ def lambda_handler(event, context):
     search_results = json.loads(get_matching_images(query).text)
     final_results = []
     for res in search_results['hits']['hits']:
-        final_results.append({
-            "url": 'https://' + res['_source']['bucket'] + '.s3.us-east-1.amazonaws.com/' + res['_source']['objectKey'],
-            "labels" : res['_source']['labels']
-        })
+        if not keyword2 or (keyword1 in res['_source']['labels'] and keyword2 in res['_source']['labels']):
+            final_results.append({
+                "url": 'https://' + res['_source']['bucket'] + '.s3.us-east-1.amazonaws.com/' + res['_source']['objectKey'],
+                "labels" : res['_source']['labels']
+            })
     success_response['results'] = final_results
 
     return make_return(200, json.dumps(success_response))
