@@ -40,7 +40,8 @@ def get_keywords(search_text):
         return None
     keyword1, keyword2 = bot_response['slots']['KeywordOne'], bot_response['slots']['KeywordTwo']
 
-    return keyword1.strip(),keyword2.strip()
+    return keyword1.strip() if keyword1 else None,keyword2.strip() if keyword2
+else None
 
 def lambda_handler(event, context):
     def make_return(code, body):
