@@ -14,7 +14,7 @@ def get_matching_images(query):
     awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
 
     query_request = {
-        "size" : 20,
+        "size" : 1000,
         "query" : {
             "match" : {
                 "labels" : query,
