@@ -1,5 +1,7 @@
 
-var apigClient = apigClientFactory.newClient()
+var apigClient = apigClientFactory.newClient({
+    apiKey: 'wGsNLVgqNZTCPoRnVUs79yjKEo7l2wF3xeOGV8Ed'
+})
 
 function display_images(images) {
     let results_container = $("#results-container")
