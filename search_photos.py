@@ -40,7 +40,7 @@ def get_keywords(search_text):
         return None
     keyword1, keyword2 = bot_response['slots']['KeywordOne'], bot_response['slots']['KeywordTwo']
 
-    return keyword1,keyword2
+    return keyword1.strip(),keyword2.strip()
 
 
 

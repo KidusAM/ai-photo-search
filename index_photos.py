@@ -35,6 +35,7 @@ def lambda_handler(event, context):
     amazon_labels = [label['Name'] for label in labels_response['Labels']]
 
     photo_labels.extend(amazon_labels)
+	photo_labels = [s.strip() for s in photo_labels]
     print("Labels for ", image_file, " are ", photo_labels)
 
     index_item = {
