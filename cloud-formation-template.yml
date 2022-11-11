@@ -147,6 +147,35 @@ Resources:
       Handler: index_photos.lambda_handler
       Timeout: 15
 
+  RestAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: AIPhotoSearch
+      Description: REST interface for ai photo search app
+      BinaryMediaTypes:
+        - image~1jpeg
+        - image~1png
+      BodyS3Location:
+        Bucket: 'ai-photosearch-swagger-container-bucket'
+        Key: 'swagger.yaml'
+
+  Deployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref RestAPI
+      Description: Deployment for ai photo search app
+      StageName: v1
+
+  APIPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn: SearchLambda
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref SearchLambda
+      Principal: apigateway.amazonaws.com
+      SourceAccount: !Ref "AWS::AccountId"
+
+
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:

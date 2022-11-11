@@ -1,88 +1,183 @@
-swagger: '2.0'
+---
+swagger: "2.0"
 info:
-  title: AI Photo Search
-  description: 'AI Photo Search application, built during the Cloud and Big Data course at Columbia University.'
-  version: 1.0.0
+  description: "AI Photo Search application, built during the Cloud and Big Data course\
+    \ at Columbia University."
+  version: "1.0.0"
+  title: "AI Photo Search"
+host: "zp5i5nwx53.execute-api.us-east-1.amazonaws.com"
+basePath: "/dev"
 schemes:
-  - https
-basePath: /v1
-produces:
-  - application/json
+- "https"
 paths:
   /search:
     get:
-      summary: photo search method
-      description: |
-        This API takes in a search query as a query parameter and returns zero or more photos that match the search query.
-      operationId: searchPhotos
+      operationId: "searchPhotos"
+      produces:
+      - "application/json"
       parameters:
-        - in: query
-          name: q
-          schema:
-            type: string
-          description: the string to be searched
-      produces:
-        - application/json
+      - name: "q"
+        in: "query"
+        required: false
+        type: "string"
       responses:
-        '200':
-          description: search results
+        "200":
+          description: "200 response"
           schema:
-            $ref: '#/definitions/SearchResponse'
-        '403':
-          description: Unauthorized
+            $ref: "#/definitions/SearchResponse"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "500":
+          description: "500 response"
           schema:
-            $ref: '#/definitions/Error'
-        '500':
-          description: Unexpected error
+            $ref: "#/definitions/Error"
+        "403":
+          description: "403 response"
           schema:
-            $ref: '#/definitions/Error'
-  /upload:
-    put:
-      summary: photo upload method
-      description: |
-        This API takes in the multi-part body sent to it (ex. a photo) and uploads it to an S3 bucket.
-      operationId: uploadPhoto
+            $ref: "#/definitions/Error"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:308030062589:function:search-images-cloudformation/invocations"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+        passthroughBehavior: "when_no_match"
+        contentHandling: "CONVERT_TO_TEXT"
+    options:
       consumes:
-        - image/png
-        - image/jpg
-        - image/jpeg
+      - "application/json"
       produces:
-        - application/json
+      - "application/json"
       responses:
-        '200':
-          description: S3 PUT operation response
+        "200":
+          description: "200 response"
           schema:
-            type: object
-        '403':
-          description: Unauthorized
+            $ref: "#/definitions/EmptyModel"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        passthroughBehavior: "when_no_match"
+  /upload/{item}:
+    put:
+      consumes:
+      - "image/jpeg"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "customlabels"
+        in: "header"
+        required: false
+        type: "string"
+      - name: "item"
+        in: "path"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "EmptyModel"
+        required: true
+        schema:
+          $ref: "#/definitions/EmptyModel"
+      responses:
+        "200":
+          description: "200 response"
           schema:
-            $ref: '#/definitions/Error'
-        '500':
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+            $ref: "#/definitions/MODELef4ce1"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "aws"
+        credentials: "arn:aws:iam::308030062589:role/api-gateway-upload-to-s3-role"
+        httpMethod: "PUT"
+        uri: "arn:aws:apigateway:us-east-1:s3:path/{bucket}/{file}"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+        requestParameters:
+          integration.request.path.file: "method.request.path.item"
+          integration.request.header.x-amz-meta-customlabels: "method.request.header.customlabels"
+          integration.request.path.bucket: "'coms6998-hw2-photos-bucket'"
+          integration.request.header.Content-Type: "'image/*'"
+        passthroughBehavior: "when_no_templates"
+    options:
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "item"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,customlabels'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+        requestTemplates:
+          application/json: "{\"statusCode\": 200}"
+        passthroughBehavior: "when_no_match"
 definitions:
-  SearchResponse:
-    type: object
-    properties:
-      results:
-        type: array
-        items:
-          $ref: '#/definitions/Photo'
-  Photo:
-    type: object
-    properties:
-      url:
-        type: string
-      labels:
-        type: array
-        items:
-          type: string
   Error:
-    type: object
+    type: "object"
     properties:
       code:
-        type: integer
-        format: int32
+        type: "integer"
+        format: "int32"
       message:
-        type: string
+        type: "string"
+  Photo:
+    type: "object"
+    properties:
+      url:
+        type: "string"
+      labels:
+        type: "array"
+        items:
+          type: "string"
+  EmptyModel: {}
+  MODELef4ce1:
+    type: "object"
+  SearchResponse:
+    type: "object"
+    properties:
+      results:
+        type: "array"
+        items:
+          $ref: "#/definitions/Photo"
+x-amazon-apigateway-gateway-responses:
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+x-amazon-apigateway-binary-media-types:
+- "image/jpeg"
+- "image/png"

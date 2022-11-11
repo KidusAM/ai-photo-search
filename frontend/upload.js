@@ -1,7 +1,7 @@
 
 let apigClient = apigClientFactory.newClient()
 let custom_labels = []
-let upload_endpoint = 'https://zp5i5nwx53.execute-api.us-east-1.amazonaws.com/dev/upload/'
+let upload_endpoint = 'https://q291g5f9ob.execute-api.us-east-1.amazonaws.com/v1/upload/'
 
 function displayLabels() {
     let labels_container = $("#custom-labels")

@@ -53,7 +53,7 @@ apigClientFactory.newClient = function (config) {
 
     
     // extract endpoint and path from url
-    var invokeUrl = 'https://zp5i5nwx53.execute-api.us-east-1.amazonaws.com/dev';
+    var invokeUrl = 'https://q291g5f9ob.execute-api.us-east-1.amazonaws.com/v1';
     var endpoint = /(^https?:\/\/[^\/]+)/g.exec(invokeUrl)[1];
     var pathComponent = invokeUrl.substring(endpoint.length);
 
@@ -122,7 +122,7 @@ apigClientFactory.newClient = function (config) {
     apigClient.uploadItemPut = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, ['item', 'customlabels'], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['item', 'body', 'customlabels'], ['body']);
         
         var uploadItemPutRequest = {
             verb: 'put'.toUpperCase(),
@@ -140,11 +140,11 @@ apigClientFactory.newClient = function (config) {
     apigClient.uploadItemOptions = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['item'], ['body']);
         
         var uploadItemOptionsRequest = {
             verb: 'options'.toUpperCase(),
-            path: pathComponent + uritemplate('/upload/{item}').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            path: pathComponent + uritemplate('/upload/{item}').expand(apiGateway.core.utils.parseParametersToObject(params, ['item'])),
             headers: apiGateway.core.utils.parseParametersToObject(params, []),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
