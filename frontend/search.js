@@ -11,6 +11,7 @@ function display_images(images) {
     })
 }
 
+let first_click = true
 $(document).ready(function() {
     $("#search-button").click(function (e) {
         const search_text = $("#search-query").val()
@@ -27,4 +28,36 @@ $(document).ready(function() {
                 console.log("Error: " + result)
             })
     })
+    $("#record-button").click(function(e) {
+        console.log("start recording")
+        let text = getSpeechText()
+        console.log("speech is ")
+        console.log(text)
+    })
+
 })
+
+function getSpeechText() {
+  var transcript;
+  var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+  var recognition = new SpeechRecognition();
+
+  recognition.onstart = function() {
+
+  };
+
+  recognition.onspeechend = function() {
+      recognition.stop();
+  }
+
+  // This runs when the speech recognition service returns result
+  recognition.onresult = function(event) {
+      transcript = event.results[0][0].transcript;
+      console.log("got transcript")
+      console.log(transcript)
+      $("#search-query").val(transcript)
+  };
+
+  recognition.start();
+  return transcript
+}
