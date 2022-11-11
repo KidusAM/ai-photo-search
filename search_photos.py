@@ -69,6 +69,7 @@ def lambda_handler(event, context):
 
     text = event['queryStringParameters']['q']
     keyword1, keyword2 = get_keywords(text)
+    print("Keywords are: ", keyword1, keyword2)
 
     if not keyword1:
         error_response['message'] = 'Invalid search query, please try again'
@@ -81,6 +82,7 @@ def lambda_handler(event, context):
     search_results = json.loads(get_matching_images(query).text)
     final_results = []
     for res in search_results['hits']['hits']:
+        print("Current match: ", res)
         if not keyword2 or (keyword1 in res['_source']['labels'] and keyword2 in res['_source']['labels']):
             final_results.append({
                 "url": 'https://' + res['_source']['bucket'] + '.s3.us-east-1.amazonaws.com/' + res['_source']['objectKey'],
