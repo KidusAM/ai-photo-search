@@ -35,16 +35,12 @@ def get_keywords(search_text):
         botAlias = 'latest',
         userId = 'search-photos-lambda',
         inputText= search_text
-        )
+    )
     if 'slots' not in bot_response:
         return None
     keyword1, keyword2 = bot_response['slots']['KeywordOne'], bot_response['slots']['KeywordTwo']
 
     return keyword1.strip(),keyword2.strip()
-
-
-
-
 
 def lambda_handler(event, context):
     def make_return(code, body):
@@ -55,9 +51,9 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
-                'body' : body
-                }
+            },
+            'body' : body
+        }
 
     error_response = {
         "code" : 400,
@@ -88,7 +84,7 @@ def lambda_handler(event, context):
         final_results.append({
             "url": 'https://' + res['_source']['bucket'] + '.s3.us-east-1.amazonaws.com/' + res['_source']['objectKey'],
             "labels" : res['_source']['labels']
-            })
+        })
     success_response['results'] = final_results
 
     return make_return(200, json.dumps(success_response))
