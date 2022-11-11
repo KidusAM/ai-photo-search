@@ -333,7 +333,7 @@ Resources:
                 - Name: Src
               OutputArtifacts:
                 - Name: AppBuildAndPushOutput
-              RunOrder: 1
+              RunOrder: 2
         - Name: Deploy
           Actions:
             - Name: DeployFrontend
@@ -348,7 +348,7 @@ Resources:
                 - Name: Src
               OutputArtifacts:
                 - Name: FrontendDeployArtifacts
-              RunOrder: 1
+              RunOrder: 2
 
 Outputs:
   WebsiteURL:
