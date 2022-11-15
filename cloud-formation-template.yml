@@ -43,6 +43,7 @@ Resources:
     Type: AWS::S3::Bucket
     DependsOn: PhotosBucketPermission
     Properties:
+      AccessControl: PublicRead
       NotificationConfiguration:
         LambdaConfigurations:
           - Event: 's3:ObjectCreated:*'
@@ -72,6 +73,24 @@ Resources:
                 - !Ref FrontendBucket
                 - /*
       Bucket: !Ref FrontendBucket
+
+  PhotosBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      PolicyDocument:
+        Id: PublicWebsitePolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref PhotosBucket
+                - /*
+      Bucket: !Ref PhotosBucket
 
   LambdasRole:
     Type: AWS::IAM::Role

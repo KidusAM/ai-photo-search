@@ -38,6 +38,7 @@ paths:
       security:
       - api_key: []
       x-amazon-apigateway-integration:
+        type: "aws_proxy"
         httpMethod: "POST"
         uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:308030062589:function:search-images-cloudformation/invocations"
         responses:
@@ -47,7 +48,6 @@ paths:
               method.response.header.Access-Control-Allow-Origin: "'*'"
         passthroughBehavior: "when_no_match"
         contentHandling: "CONVERT_TO_TEXT"
-        type: "aws_proxy"
     options:
       consumes:
       - "application/json"
@@ -66,6 +66,7 @@ paths:
             Access-Control-Allow-Headers:
               type: "string"
       x-amazon-apigateway-integration:
+        type: "mock"
         responses:
           default:
             statusCode: "200"
@@ -76,7 +77,6 @@ paths:
         requestTemplates:
           application/json: "{\"statusCode\": 200}"
         passthroughBehavior: "when_no_match"
-        type: "mock"
   /upload/{item}:
     put:
       consumes:
@@ -106,6 +106,7 @@ paths:
             Access-Control-Allow-Origin:
               type: "string"
       x-amazon-apigateway-integration:
+        type: "aws"
         credentials: "arn:aws:iam::308030062589:role/api-gateway-upload-to-s3-role"
         httpMethod: "PUT"
         uri: "arn:aws:apigateway:us-east-1:s3:path/{bucket}/{file}"
@@ -117,10 +118,9 @@ paths:
         requestParameters:
           integration.request.path.file: "method.request.path.item"
           integration.request.header.x-amz-meta-customlabels: "method.request.header.customlabels"
-          integration.request.path.bucket: "'coms6998-hw2-photos-bucket'"
+          integration.request.path.bucket: "'draftstack-photosbucket-vww44vp8i26m'"
           integration.request.header.Content-Type: "'image/*'"
         passthroughBehavior: "when_no_templates"
-        type: "aws"
     options:
       consumes:
       - "application/json"
@@ -140,6 +140,7 @@ paths:
             Access-Control-Allow-Headers:
               type: "string"
       x-amazon-apigateway-integration:
+        type: "mock"
         responses:
           default:
             statusCode: "200"
@@ -150,7 +151,6 @@ paths:
         requestTemplates:
           application/json: "{\"statusCode\": 200}"
         passthroughBehavior: "when_no_match"
-        type: "mock"
 securityDefinitions:
   api_key:
     type: "apiKey"
@@ -185,12 +185,12 @@ definitions:
         items:
           $ref: "#/definitions/Photo"
 x-amazon-apigateway-gateway-responses:
-  DEFAULT_5XX:
+  DEFAULT_4XX:
     responseParameters:
       gatewayresponse.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
       gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
       gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-  DEFAULT_4XX:
+  DEFAULT_5XX:
     responseParameters:
       gatewayresponse.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
       gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
